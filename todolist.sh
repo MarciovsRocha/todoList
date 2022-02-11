@@ -52,16 +52,18 @@ listar_arquivos(){
 
     if [ 0 == "$e" ] ; then 
         for arquivo in "${arquivos[@]}" ; do
+            arquivo="$(tr -d '\n' <<< "$arquivo")"
             echo "-----------"
             echo "$arquivo" >> todos.txt
-            echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))" >> todos.txt
+            echo "$(sed -e 's/# TODO //' <<< "$(sed -n '/^# TODO/p' < "${arquivo}")")" >> todos.txt
         done
     fi
 
     for arquivo in "${arquivos[@]}" ; do
+        arquivo="$(tr -d '\n' <<< "$arquivo")"
         echo "-----------"
         echo "$arquivo"
-        echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))"
+        echo "$(sed -e 's/# TODO //' <<< "$(sed -n '/^# TODO/p' < "${arquivo}")")"
     done
 }
 
