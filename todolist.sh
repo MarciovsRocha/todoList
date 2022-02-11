@@ -1,30 +1,73 @@
 #! /bin/bash
 
-if [ -f /storage/utils.sh ]
+if [ -f /storage/scripts/utils.sh ]
 then 
-    source /storage/utils.sh
+    # shellcheck source=/dev/null
+    source /storage/scripts/utils.sh
 else 
-    echo "Arquivo de \"Utils.sh\" não encontrado."
-    exit 1 
+    echo "[todoList.sh gerou um erro]: Arquivo de \"Utils.sh\" não encontrado." >> "logs/$(date '+%Y%m%d_%H%M%S').log"
 fi
 
-# passe somente 1 parâmetro (opcional) sendo o mesmo a pasta 
-# em que será iniciada a busca de arquivos
-function listar_arquivos(){
-    arquivos=()
-    initialFolder="./"
-    if ! [ -z "$1" ] ; then
-        initialFolder=$1
-    fi
-    # para todos os arquivos na lista 
-    # TODO -c "Arrumar Lista" -t ARRUMAR
-    for element in $(ls "$initialFolder"); do
-        if [ -f $element ]; then
-            arquivos+=("$element")
-        fi
+# função para listar todos os arquivos na pasta passada atual ou
+# na pasta passada pelo argumento -f 
+listar_arquivos(){
+    f=$(pwd)
+    e=1
+    d=1
+    while getopts f:d:e: flag; do
+        case "${flag}" in
+            f)
+                f=${OPTARG}
+                ;;
+            d)
+                d=${OPTARG}
+                ;;
+            e)
+                e=${OPTARG}
+                ;;
+            *)
+                "$msgFolder"/parametro_incorreto
+#                exit 1
+                ;;
+        esac
     done
-    seq -n /"# TODO"/p $arquivos
+
+    # valida se o valor passado pela flag -f é um diretório válido
+    check_dir $f
+    test=$?
+    if [ 1 == "$test" ] ; then 
+        "$msgFolder"/diretorio_nao_encontrado
+#        exit 1
+    fi
+
+    # valida se o valor passado pela flah -d é um inteiro positivo
+    isnumber $d
+    test=$?
+    if [ 1 == "$test" ] ; then
+        "$msgFolder"/parametro_incorreto
+#        exit 1
+    fi
+
+    mapfile arquivos <<< "$(find "$f" -maxdepth "$d" ! -type d)"
+
+    if [ 0 == "$e" ] ; then 
+        for arquivo in "${arquivos[@]}" ; do
+            echo "-----------"
+            echo "$arquivo" >> todos.txt
+            echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))" >> todos.txt
+        done
+    fi
+
+    for arquivo in "${arquivos[@]}" ; do
+        echo "-----------"
+        echo "$arquivo"
+        echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))"
+    done
 }
+
+#arquivo="$(pwd)/utils.sh"
+#echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))"
+
 
 # MANIPULACAO DE ARRAY
 # arquivos=()                  # cria o array
