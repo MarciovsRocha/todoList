@@ -6,6 +6,7 @@ then
     source /storage/scripts/utils.sh
 else 
     echo "[todoList.sh gerou um erro]: Arquivo de \"Utils.sh\" não encontrado." >> "logs/$(date '+%Y%m%d_%H%M%S').log"
+    msgFolder=./
 fi
 
 # função para listar todos os arquivos na pasta passada atual ou
@@ -50,6 +51,7 @@ listar_arquivos(){
 
     mapfile arquivos <<< "$(find "$f" -maxdepth "$d" ! -type d)"
 
+# TODO -c "Verificar possibilidade de redução de comandos 'ECHOS'" -t LIMPEZA
     if [ 0 == "$e" ] ; then 
         for arquivo in "${arquivos[@]}" ; do
             arquivo="$(tr -d '\n' <<< "$arquivo")"
@@ -58,7 +60,8 @@ listar_arquivos(){
             echo "$(sed -e 's/# TODO //' <<< "$(sed -n '/^# TODO/p' < "${arquivo}")")" >> todos.txt
         done
     fi
-
+    
+# TODO -c "Verificar possibilidade de redução de comandos 'ECHOS'" -t LIMPEZA
     for arquivo in "${arquivos[@]}" ; do
         arquivo="$(tr -d '\n' <<< "$arquivo")"
         echo "-----------"
@@ -66,6 +69,8 @@ listar_arquivos(){
         echo "$(sed -e 's/# TODO //' <<< "$(sed -n '/^# TODO/p' < "${arquivo}")")"
     done
 }
+
+# TODO -c 'Remover Anotações desnecessárias' -t LIMPEZA
 
 #arquivo="$(pwd)/utils.sh"
 #echo "$(sed -e 's/# TODO //' <<< $(sed -n '/^# TODO/p' < "${arquivo}"))"
