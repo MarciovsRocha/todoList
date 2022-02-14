@@ -1,0 +1,5 @@
+--------------------
+/mnt/c/Users/marcio.souza/projetos/montarDiscos/utils.sh
+-c CheckRoot -t ARRUMAR
+
+-c "Extrair dados de objeto JSON" -t TERMINAR
