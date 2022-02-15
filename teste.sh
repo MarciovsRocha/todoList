@@ -26,6 +26,17 @@ else
 	for arquivo in "${arquivos[@]}"; do
 		arquivo="$(tr -d '\n' <<< "$arquivo")"
 		content="$(sed -e 's/# TODO //' <<< "$(sed -n '/# TODO/p' < "$arquivo")")"
+		# teste 
+		echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+		mapfile conteudo <<< tr '\r' '\n' <<< "$content"
+		echo "numero de elementos em content: ${#conteudo[@]}"
+		echo -e "Conteudo de content:\n${conteudo[@]}"
+		echo -e "\nFOR LOOP\n\n"
+		for line in "${conteudo[@]}" ; do
+			echo "$line"
+		done
+		echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+		# /teste
 		if ! [ -z "$content" ] ; then
 			if [ "${export}" ] ; then
 				echo '--------------------' >> todoList.txt
